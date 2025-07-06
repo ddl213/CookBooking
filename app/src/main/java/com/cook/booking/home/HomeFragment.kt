@@ -7,7 +7,7 @@ import com.example.common.constants.RoutePath.PATH_HOME
 import com.example.common.utils.LogUtils
 import com.cook.booking.databinding.FragmentHomeBinding
 
-@Router(PATH_HOME)
+@Router(path = PATH_HOME)
 class HomeFragment : BaseBindFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
 
     override fun initView(binding: FragmentHomeBinding) {

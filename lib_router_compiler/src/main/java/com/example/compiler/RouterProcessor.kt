@@ -18,26 +18,42 @@ class RouterProcessor(
     private var processed = false
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        if (processed) return emptyList()
+        if (processed) {
+            logger.info("RouterProcessor: Already processed, returning empty list.")
+            return emptyList()
+        }
         processed = true
 
-        logger.info("开始处理路由注解")
+        logger.info("RouterProcessor: 开始处理路由注解")
 
         // 获取目标包名
         val targetPackage = options["router.target_package"] ?: "com.example.router"
-        logger.info("配置的目标包名: $targetPackage")
+        logger.info("RouterProcessor: 配置的目标包名: $targetPackage")
 
         // 获取所有带有 @Router 注解的类
-        val symbols = resolver.getSymbolsWithAnnotation(Router::class.qualifiedName!!)
+        val routerAnnotationQualifiedName = Router::class.qualifiedName!!
+        logger.info("RouterProcessor: 查找注解: $routerAnnotationQualifiedName")
+
+        val symbols = resolver.getSymbolsWithAnnotation(routerAnnotationQualifiedName)
             .filterIsInstance<KSClassDeclaration>()
             .filter { it.validate() }
+            .toList() // 将 Sequence 转换为 List，以便多次迭代和获取大小
+
+        logger.info("RouterProcessor: 发现 ${symbols.size} 个带有 @Router 注解的类。")
+
+        if (symbols.isEmpty()) {
+            logger.warn("RouterProcessor: 未发现任何带有 @Router 注解的类，跳过代码生成。")
+        }
 
         symbols.forEach { classDeclaration ->
+            logger.info("RouterProcessor: 正在处理类: ${classDeclaration.qualifiedName?.asString()}")
             processRouterClass(classDeclaration)
         }
 
         if (routerMap.isNotEmpty()) {
             generateRouterRegistry(targetPackage)
+        } else {
+            logger.info("RouterProcessor: routerMap 为空，不生成 RouterRegistry。")
         }
 
         return emptyList()
@@ -47,28 +63,37 @@ class RouterProcessor(
         val routerAnnotation = classDeclaration.annotations
             .find {
                 it.annotationType.resolve()?.declaration?.qualifiedName?.asString() == Router::class.qualifiedName
-            } ?: return
+            } ?: run {
+            logger.error("RouterProcessor: 未找到 ${Router::class.qualifiedName} 注解在类 ${classDeclaration.qualifiedName?.asString()}", classDeclaration)
+            return
+        }
 
         val path = routerAnnotation.arguments
             .firstOrNull { it.name?.asString() == "path" }
-            ?.value as? String ?: return
+            ?.value as? String ?: run {
+            logger.error("RouterProcessor: 未找到 'path' 参数在注解 ${Router::class.qualifiedName} 中，类 ${classDeclaration.qualifiedName?.asString()}", classDeclaration)
+            return
+        }
 
-        val qualifiedName = classDeclaration.qualifiedName?.asString() ?: return
+        val qualifiedName = classDeclaration.qualifiedName?.asString() ?: run {
+            logger.error("RouterProcessor: 无法获取类 ${classDeclaration.simpleName.asString()} 的完整限定名", classDeclaration)
+            return
+        }
 
         if (routerMap.containsKey(path)) {
             val existing = routerMap[path]
-            logger.error("路由路径 '$path' 已存在: $existing", classDeclaration)
+            logger.error("RouterProcessor: 路由路径 '$path' 已存在: $existing (新: $qualifiedName)", classDeclaration)
         } else {
             routerMap[path] = qualifiedName
+            logger.info("RouterProcessor: 添加路由: '$path' -> '$qualifiedName'")
         }
     }
 
     private fun generateRouterRegistry(targetPackage: String) {
         try {
-            // ✅ 强制使用正确的包名
-            val finalPackage = "app.access"
+            val finalPackage = targetPackage // 确保这里使用传入的 targetPackage
 
-            logger.info("正在生成路由注册表到包: $finalPackage")
+            logger.info("RouterProcessor: 正在生成路由注册表到包: $finalPackage")
 
             val fileSpec = FileSpec.builder(finalPackage, "RouterRegistry")
                 .addFileComment("AUTO-GENERATED FILE. DO NOT EDIT MANUALLY!\n")
@@ -107,15 +132,14 @@ class RouterProcessor(
                 )
                 .build()
 
-            // ✅ 确保使用正确的依赖关系
             fileSpec.writeTo(
                 codeGenerator,
                 Dependencies(aggregating = false),
             )
 
-            logger.info("路由注册表生成成功")
+            logger.info("RouterProcessor: 路由注册表生成成功")
         } catch (e: Exception) {
-            logger.error("生成路由注册表失败: ${e.message}")
+            logger.error("RouterProcessor: 生成路由注册表失败: ${e.message}") // 打印完整异常
         }
     }
 
@@ -127,7 +151,7 @@ class RouterProcessor(
         return CodeBlock.builder().apply {
             add("mapOf(\n")
             routerMap.forEach { (path, className) ->
-                add("\"$path\" to \"$className\",\n")
+                add("    \"$path\" to \"$className\",\n") // 增加缩进，更美观
             }
             add(")")
         }.build()
