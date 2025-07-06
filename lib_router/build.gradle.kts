@@ -1,7 +1,6 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
 }
 
 android {
@@ -31,46 +30,29 @@ android {
         jvmTarget = "1.8"
     }
 
-    publishing {
-        singleVariant("debug")
-        singleVariant("release")
-    }
-
     buildFeatures {
         buildConfig = false // 如果不需要 BuildConfig 可关闭
     }
 
-    sourceSets {
-        getByName("main") {
-            resources.srcDirs("src/main/resources")
-        }
-    }
-    // 确保包含 META-INF
-    packaging {
-        resources.excludes.add("META-INF/*")
-        resources.pickFirsts.add("META-INF/services/*")
-    }
 }
 
 dependencies {
+    api(project(":lib_router_annotations"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
 
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.androidx.navigation.runtime)
+    implementation(libs.androidx.monitor)
+    implementation(libs.androidx.junit.ktx)
 
     // KSP 依赖
-    implementation("com.google.devtools.ksp:symbol-processing-api:1.9.20-1.0.14")
-
-
-    // KotlinPoet 用于代码生成
-    implementation("com.squareup:kotlinpoet:1.16.0")
-    implementation("com.squareup:kotlinpoet-ksp:1.16.0")
+//    implementation("com.google.devtools.ksp:symbol-processing-api:1.9.0-1.0.13")
+//
+//
+//    // KotlinPoet 用于代码生成
+//    implementation("com.squareup:kotlinpoet:1.16.0")
+//    implementation("com.squareup:kotlinpoet-ksp:1.16.0")
 }
 
-// KSP 配置 - 不需要任何参数
-ksp {
-    // 空配置
-}

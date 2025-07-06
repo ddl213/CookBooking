@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="CommonGradientAttrs">
-        <attr name="background" format="color" />
+        <attr name="g_background" format="color" />
         <attr name="start_color" format="color" />
         <attr name="center_color" format="color" />
         <attr name="end_color" format="color" />
-        <attr name="angle" format="float" />
-        <attr name="background_drawable" format="reference" />
+        <attr name="g_angle" format="float" />
+        <attr name="g_drawable" format="reference" />
 
         <attr name="border" format="dimension" />
         <attr name="border_color" format="color" />

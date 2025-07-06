@@ -100,7 +100,7 @@ class BaseDrawable : Drawable() {
         try {
             // --- 背景属性处理 ---
             // 尝试获取 `cg_backgroundDrawable` 属性，如果设置了，则优先使用 Drawable 作为背景
-            val bgDrawableRef = style.getResourceId(R.styleable.CommonGradientAttrs_background_drawable, 0)
+            val bgDrawableRef = style.getResourceId(R.styleable.CommonGradientAttrs_g_drawable, 0)
             if (bgDrawableRef != 0) {
                 backgroundDrawable = ResourcesCompat.getDrawable(context.resources,bgDrawableRef, context.theme)
                 // 如果设置了 Drawable 背景，则清除所有其他颜色、边框和圆角属性，避免冲突
@@ -117,14 +117,14 @@ class BaseDrawable : Drawable() {
                 backgroundDrawable = null // 确保 Drawable 背景为 null
 
                 // 检查是否存在纯色背景或渐变背景的属性
-                val hasBgColor = style.hasValue(R.styleable.CommonGradientAttrs_background)
+                val hasBgColor = style.hasValue(R.styleable.CommonGradientAttrs_g_background)
                 val hasBgStartColor = style.hasValue(R.styleable.CommonGradientAttrs_start_color)
                 val hasBgCenterColor = style.hasValue(R.styleable.CommonGradientAttrs_center_color)
                 val hasBgEndColor = style.hasValue(R.styleable.CommonGradientAttrs_end_color)
 
                 if (hasBgColor) {
                     // 如果设置了纯色背景，则将所有渐变颜色也设置为该纯色，以便统一绘制逻辑
-                    backgroundColor = style.getColor(R.styleable.CommonGradientAttrs_background, Color.TRANSPARENT)
+                    backgroundColor = style.getColor(R.styleable.CommonGradientAttrs_g_background, Color.TRANSPARENT)
                     backgroundStartColor = backgroundColor
                     backgroundCenterColor = backgroundColor
                     backgroundEndColor = backgroundColor
@@ -134,7 +134,7 @@ class BaseDrawable : Drawable() {
                     backgroundStartColor = style.getColor(R.styleable.CommonGradientAttrs_start_color, Color.TRANSPARENT)
                     backgroundCenterColor = style.getColor(R.styleable.CommonGradientAttrs_center_color, Color.TRANSPARENT)
                     backgroundEndColor = style.getColor(R.styleable.CommonGradientAttrs_end_color, Color.TRANSPARENT)
-                    backgroundGradientAngle = style.getFloat(R.styleable.CommonGradientAttrs_angle, 0f)
+                    backgroundGradientAngle = style.getFloat(R.styleable.CommonGradientAttrs_g_angle, 0f)
                     backgroundColor = Color.TRANSPARENT // 渐变时，纯色背景颜色设为透明
                 } else {
                     // 如果没有任何背景相关属性，则所有背景颜色默认为透明

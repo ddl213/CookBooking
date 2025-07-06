@@ -10,6 +10,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.*
 import androidx.navigation.fragment.findNavController
+import com.example.annotations.Router
+import java.io.File
 
 class AppRouter private constructor(
     private val navigationSource: Any,
@@ -141,30 +143,92 @@ class AppRouter private constructor(
             }
         } catch (e: Exception) {
             Log.e("AppRouter", "导航失败: ${e.message}")
-            navigateToErrorPage(context, e)
+            //navigateToErrorPage(context, e)
         }
     }
 
     private fun getDestinationForPath(path: String): Class<*>? {
+        Log.d("AppRouter", "正在查找路径: $path")
         return try {
-            // 访问全局路由注册表
-            val registryClass = Class.forName("com.example.cookbooking.access.RouterRegistry")
+            val classLoader = this::class.java.classLoader
+
+            // ✅ 安全加载路由注册表
+            val registryClass = Class.forName("app.access.RouterRegistry", true, classLoader)
             val method = registryClass.getMethod("getDestination", String::class.java)
             method.invoke(null, path) as Class<*>
         } catch (e: Exception) {
-            Log.e("AppRouter", "获取目标失败: ${e.message}")
+            Log.e("AppRouter", "获取目标失败", e) // 打印完整异常
+            //navigateToErrorPage(context, e)
+            getDestinationForPathAnnotation(path)
+        }
+    }
+
+    private fun getDestinationForPathAnnotation(path: String): Class<*>? {
+        return try {
+            // ✅ 扫描所有带有 @Router 注解的类
+            val packageName = "com.example.cookbooking"
+            val classes = scanClassesWithAnnotation(packageName, Router::class.java)
+
+            classes.find { clazz ->
+                val router = clazz.getAnnotation(Router::class.java)
+                router?.path == path
+            } ?: throw ClassNotFoundException("未找到匹配的路由: $path")
+        } catch (e: Exception) {
+            Log.e("AppRouter", "获取目标失败", e)
             null
         }
     }
 
-    private fun navigateToErrorPage(context: Context, error: Throwable) {
-        try {
-            val errorIntent = Intent(context, Class.forName("com.example.cookbooking.ErrorActivity"))
-            errorIntent.putExtra("error_message", error.message)
-            errorIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(errorIntent)
-        } catch (e: Exception) {
-            Log.e("AppRouter", "无法导航到错误页面: ${e.message}")
+    private fun scanClassesWithAnnotation(packageName: String, annotation: Class<out Annotation>): List<Class<*>> {
+        val classLoader = this::class.java.classLoader
+        val classes = mutableListOf<Class<*>>()
+
+        // 遍历包中的所有类
+        val packagePath = packageName.replace('.', '/')
+        val resources = classLoader.getResources(packagePath)
+
+        while (resources.hasMoreElements()) {
+            val resource = resources.nextElement()
+            if (resource.protocol == "file") {
+                val file = File(resource.file)
+                if (file.isDirectory) {
+                    classes.addAll(scanDirectoryForClasses(file, packageName))
+                }
+            }
+        }
+
+        return classes.filter { clazz ->
+            clazz.isAnnotationPresent(annotation)
         }
     }
+
+    private fun scanDirectoryForClasses(directory: File, packageName: String): List<Class<*>> {
+        val classes = mutableListOf<Class<*>>()
+
+        directory.listFiles()?.forEach { file ->
+            if (file.isDirectory) {
+                classes.addAll(scanDirectoryForClasses(file, "$packageName.${file.name}"))
+            } else if (file.name.endsWith(".class")) {
+                try {
+                    val className = "$packageName.${file.name.substring(0, file.name.length - 6)}"
+                    classes.add(Class.forName(className))
+                } catch (e: ClassNotFoundException) {
+                    // 忽略无法加载的类
+                }
+            }
+        }
+
+        return classes
+    }
+
+//    private fun navigateToErrorPage(context: Context, error: Throwable) {
+//        try {
+//            val errorIntent = Intent(context, Class.forName("com.cook.booking.ErrorActivity"))
+//            errorIntent.putExtra("error_message", error.message)
+//            errorIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//            context.startActivity(errorIntent)
+//        } catch (e: Exception) {
+//            Log.e("AppRouter", "无法导航到错误页面: ${e.message}")
+//        }
+//    }
 }

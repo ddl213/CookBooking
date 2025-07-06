@@ -1,4 +1,4 @@
-package com.example.cookbooking
+package com.cook.booking
 
 import org.junit.Test
 

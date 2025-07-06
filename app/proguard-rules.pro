@@ -21,16 +21,12 @@
 #-renamesourcefileattribute SourceFile
 
 
--keep public class com.alibaba.android.arouter.routes.**{*;}
--keep public class com.alibaba.android.arouter.launcher.**{*;}
--keep public class com.alibaba.android.arouter.facade.**{*;}
--keep class * implements com.alibaba.android.arouter.facade.template.IProvider
--keep class * implements com.alibaba.android.arouter.facade.template.IInterceptor
--keep class * implements com.alibaba.android.arouter.facade.template.IRouteGroup
--keep class * implements com.alibaba.android.arouter.facade.template.ISyringe
--keepclasseswithmembers class * {
-    @com.alibaba.android.arouter.facade.annotation.Route <methods>;
-}
--keepclasseswithmembers class * {
-    @com.alibaba.android.arouter.facade.annotation.Autowired <fields>;
-}
+# 保留路由相关类
+-keep class app.access.RouterRegistry { *; }
+-keep class com.example.annotations.** { *; }
+-keep class com.example.router.** { *; }
+-keep class com.example.compiler.** { *; }
+
+# 保留注解
+-keepattributes RuntimeVisibleAnnotations
+-keep @com.example.annotations.Router class *
