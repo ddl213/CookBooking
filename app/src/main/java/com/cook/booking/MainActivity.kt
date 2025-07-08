@@ -1,19 +1,25 @@
 package com.cook.booking
 
-import com.example.annotations.Router
+import android.util.Log
+import androidx.navigation.findNavController
+import com.example.annotations.Route
 import com.example.common.base.BaseBindActivity
 import com.example.common.constants.RoutePath.PATH_MAIN
 import com.cook.booking.databinding.ActivityMainBinding
-import com.cook.booking.splash.SplashFragment
 import com.example.common.constants.Constants
+import com.example.common.constants.RoutePath.PATH_SPLASH
 import com.example.common.utils.LogUtils
 import com.example.common.utils.MMKVUtils
+import com.example.router.AppRouter
 
-@Router(path = PATH_MAIN)
+@Route(path = PATH_MAIN)
 class MainActivity : BaseBindActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
     private val SPLASH_SUPPRESSION_TIME_MS = 0
     override fun initView(binding: ActivityMainBinding) {
+        LogUtils.d(msg = "当前在MainActivity")
+        val navController = findNavController(R.id.nav_host_fragment)
+        AppRouter.init( this, navController)
         showSplash()
     }
 
@@ -26,11 +32,10 @@ class MainActivity : BaseBindActivity<ActivityMainBinding>(ActivityMainBinding::
     }
 
     private fun showSplash(){
-        if (supportFragmentManager.findFragmentById(binding.flContainer.id) == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fl_container,SplashFragment())
-                .commit()
-        }
+        AppRouter.get()
+            .to(PATH_SPLASH)
+            .toFragment()
+            .navigate()
 
 
         val lastExitTime = MMKVUtils.getLong(Constants.KEY_LAST_EXIT_TIME)

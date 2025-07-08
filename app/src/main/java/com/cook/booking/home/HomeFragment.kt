@@ -1,13 +1,13 @@
 package com.cook.booking.home
 
 import android.content.Intent
-import com.example.annotations.Router
+import com.example.annotations.Route
 import com.example.common.base.BaseBindFragment
 import com.example.common.constants.RoutePath.PATH_HOME
 import com.example.common.utils.LogUtils
 import com.cook.booking.databinding.FragmentHomeBinding
 
-@Router(path = PATH_HOME)
+@Route(path = PATH_HOME)
 class HomeFragment : BaseBindFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
 
     override fun initView(binding: FragmentHomeBinding) {

@@ -21,11 +21,6 @@ class GView : View {
         styler = GStyler(this, context, attrs)
     }
 
-    /**
-     * (可选) 如果需要在运行时动态修改样式，可以通过此方法获取 GStyler，
-     * 进而获取 BaseDrawable 实例并调用其方法。
-     * 这样做可以在不直接在 CView 中声明 setXxx 方法的前提下，提供动态修改能力。
-     */
     fun getStyler(): GStyler {
         return styler
     }

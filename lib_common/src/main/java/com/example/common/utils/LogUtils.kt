@@ -1,6 +1,6 @@
 package com.example.common.utils
 
-import android.util.Log // 导入 Android 的 Log 类
+import android.util.Log
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -108,42 +108,41 @@ object LogUtils { // 使用 object 关键字创建单例对象
         val callerInfoHashCode = callerInfo.hashCode()
 
         return tagCache.computeIfAbsent(callerInfoHashCode) {
-            "$baseTag::$callerInfo" // 如果缓存中没有，则计算并存入
+            "$baseTag:$callerInfo" // 如果缓存中没有，则计算并存入
         }
     }
 
-    // --- 日志打印方法 ---
 
     // Verbose
     fun v(format: String, vararg args: Any?) {
         if (logLevel <= VERBOSE) Log.v(generateFinalTag(null), format.format(*args))
     }
-    fun v(tag: String? = null, msg: String) {
+    fun v(msg: String,tag: String? = null ) {
         if (logLevel <= VERBOSE) Log.v(generateFinalTag(tag), msg)
     }
 
     // Debug
+    fun d(msg: String,tag: String? = null) {
+        if (logLevel <= DEBUG) Log.d(generateFinalTag(tag), msg)
+    }
     fun d(format: String, vararg args: Any?) {
         if (logLevel <= DEBUG) Log.d(generateFinalTag(null), format.format(*args))
     }
-    fun d(tag: String? = null, msg: String) {
-        if (logLevel <= DEBUG) Log.d(generateFinalTag(tag), msg)
-    }
 
     // Info
+    fun i(msg: String,tag: String? = null) {
+        if (logLevel <= INFO) Log.i(generateFinalTag(tag), msg)
+    }
     fun i(format: String, vararg args: Any?) {
         if (logLevel <= INFO) Log.i(generateFinalTag(null), format.format(*args))
     }
-    fun i(tag: String? = null, msg: String) {
-        if (logLevel <= INFO) Log.i(generateFinalTag(tag), msg)
-    }
 
     // Warn
+    fun w(msg: String,tag: String? = null) {
+        if (logLevel <= WARN) Log.w(generateFinalTag(tag), msg)
+    }
     fun w(format: String, vararg args: Any?) {
         if (logLevel <= WARN) Log.w(generateFinalTag(null), format.format(*args))
-    }
-    fun w(tag: String? = null, msg: String) {
-        if (logLevel <= WARN) Log.w(generateFinalTag(tag), msg)
     }
 
     // Error
@@ -153,11 +152,9 @@ object LogUtils { // 使用 object 关键字创建单例对象
     fun e(format: String, vararg args: Any?) {
         if (logLevel <= ERROR) Log.e(generateFinalTag(null), format.format(*args))
     }
-    fun e(tag: String? = null, msg: String, tr: Throwable? = null) {
+    fun e(msg: String, tag: String? = null, tr: Throwable? = null) {
         if (logLevel <= ERROR) Log.e(generateFinalTag(tag), msg, tr)
     }
-
-    // --- 配置方法 ---
 
     /**
      * 设置全局的日志基础 Tag 前缀。

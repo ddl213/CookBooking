@@ -1,6 +1,8 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") // 纯 Kotlin JVM 库插件
-    id("com.google.devtools.ksp") // KSP 插件
+    id ("java-library")
+    id ("org.jetbrains.kotlin.jvm")
+    id ("kotlin")
+    id("com.google.devtools.ksp")
 }
 kotlin {
     jvmToolchain(17)
@@ -9,13 +11,14 @@ kotlin {
 dependencies {
     implementation(project(":lib_router_annotations"))
 
-    implementation("com.google.devtools.ksp:symbol-processing-api:1.9.20-1.0.14")
-    implementation("com.squareup:kotlinpoet:1.16.0")
-    implementation("com.squareup:kotlinpoet-ksp:1.16.0")
-    implementation(platform(kotlin("bom")))
-    implementation(kotlin("stdlib"))
-}
+    compileOnly("com.google.devtools.ksp:symbol-processing-api:1.9.20-1.0.14")
+    compileOnly("com.squareup:kotlinpoet:1.16.0")
+    compileOnly("com.squareup:kotlinpoet-ksp:1.16.0")
+    compileOnly("com.squareup:kotlinpoet-metadata:1.16.0")
 
-ksp {
-    arg("router.target_package", "app.access")
+
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }

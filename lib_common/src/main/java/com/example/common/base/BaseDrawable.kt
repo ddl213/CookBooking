@@ -345,7 +345,6 @@ class BaseDrawable : Drawable() {
      *
      * @param alpha 透明度值 (0-255)。
      */
-    @Deprecated("Deprecated in Java") // 覆盖了 Java 中已弃用的成员
     override fun setAlpha(alpha: Int) {
         paint.alpha = alpha // 设置填充画笔的透明度
         borderPaint.alpha = alpha // 设置边框画笔的透明度
@@ -357,7 +356,6 @@ class BaseDrawable : Drawable() {
      *
      * @return 不透明度常量，如 `PixelFormat.OPAQUE` 或 `PixelFormat.TRANSLUCENT`。
      */
-    @Deprecated("Deprecated in Java") // 覆盖了 Java 中已弃用的成员
     override fun getOpacity(): Int {
         // 如果填充画笔完全不透明，则返回 OPAQUE，否则返回 TRANSLUCENT
         return if (paint.alpha == 255) PixelFormat.OPAQUE else PixelFormat.TRANSLUCENT
@@ -368,15 +366,12 @@ class BaseDrawable : Drawable() {
      *
      * @param colorFilter 要应用的 `ColorFilter`。
      */
-    @Deprecated("Deprecated in Java") // 覆盖了 Java 中已弃用的成员
     override fun setColorFilter(colorFilter: android.graphics.ColorFilter?) {
         paint.colorFilter = colorFilter // 设置填充画笔的颜色过滤器
         borderPaint.colorFilter = colorFilter // 设置边框画笔的颜色过滤器
         invalidateSelf() // 请求 Drawable 重绘
     }
 
-    // --- Public Setters for Dynamic Updates ---
-    // 以下方法允许在运行时动态修改 Drawable 的样式，而不仅仅通过 XML 属性。
 
     /**
      * 动态设置背景 Drawable。如果设置，会清除所有颜色、边框和圆角样式。
@@ -477,12 +472,11 @@ class BaseDrawable : Drawable() {
      */
     fun setBorderColors(@ColorInt startColor: Int, @ColorInt centerColor: Int = Color.TRANSPARENT, @ColorInt endColor: Int) {
         // 只有当没有 Drawable 背景且颜色组合发生变化时才更新
-        if (backgroundDrawable == null && (
-                    this.borderStartColor != startColor ||
-                            this.borderCenterColor != centerColor ||
-                            this.borderEndColor != endColor ||
-                            this.borderColor != Color.TRANSPARENT // 如果之前是纯色边框，也需要强制更新
-                    )
+        if (backgroundDrawable == null && (this.borderStartColor != startColor ||
+                    this.borderCenterColor != centerColor ||
+                    this.borderEndColor != endColor ||
+                    this.borderColor != Color.TRANSPARENT // 如果之前是纯色边框，也需要强制更新
+                )
         ) {
             this.borderStartColor = startColor
             this.borderCenterColor = centerColor
@@ -545,7 +539,7 @@ class BaseDrawable : Drawable() {
      * @param bottomRight 右下角圆角半径。
      * @param bottomLeft 左下角圆角半径。
      */
-    fun setCornerRadii(topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float) {
+    fun setCornerRadius(topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float) {
         // 检查圆角值是否有变化
         val changed = cornerRadii == null ||
                 cornerRadii!![0] != topLeft || cornerRadii!![2] != topRight ||

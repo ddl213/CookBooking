@@ -1,11 +1,10 @@
 package com.example.compiler
 
-import com.example.annotations.Router
+import com.example.annotations.Route
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ksp.writeTo
 
 class RouterProcessor(
@@ -14,146 +13,104 @@ class RouterProcessor(
     private val options: Map<String, String>
 ) : SymbolProcessor {
 
-    private val routerMap = mutableMapOf<String, String>()
+    private val routeMap = mutableMapOf<String, String>()
     private var processed = false
+    private val ROUTE_ANNOTATION_NAME = Route::class.qualifiedName!!
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        if (processed) {
-            logger.info("RouterProcessor: Already processed, returning empty list.")
-            return emptyList()
-        }
+        if (processed) return emptyList()
         processed = true
 
-        logger.info("RouterProcessor: 开始处理路由注解")
+        val moduleName = options["MODULE_NAME"] ?: "unknown"
+        logger.info("RouterProcessor started for module: $moduleName")
 
-        // 获取目标包名
-        val targetPackage = options["router.target_package"] ?: "com.example.router"
-        logger.info("RouterProcessor: 配置的目标包名: $targetPackage")
-
-        // 获取所有带有 @Router 注解的类
-        val routerAnnotationQualifiedName = Router::class.qualifiedName!!
-        logger.info("RouterProcessor: 查找注解: $routerAnnotationQualifiedName")
-
-        val symbols = resolver.getSymbolsWithAnnotation(routerAnnotationQualifiedName)
+        val symbols = resolver.getSymbolsWithAnnotation(ROUTE_ANNOTATION_NAME)
             .filterIsInstance<KSClassDeclaration>()
             .filter { it.validate() }
-            .toList() // 将 Sequence 转换为 List，以便多次迭代和获取大小
+            .toList()
 
-        logger.info("RouterProcessor: 发现 ${symbols.size} 个带有 @Router 注解的类。")
-
-        if (symbols.isEmpty()) {
-            logger.warn("RouterProcessor: 未发现任何带有 @Router 注解的类，跳过代码生成。")
-        }
+        logger.info("Found ${symbols.size} @Route annotated classes")
 
         symbols.forEach { classDeclaration ->
-            logger.info("RouterProcessor: 正在处理类: ${classDeclaration.qualifiedName?.asString()}")
-            processRouterClass(classDeclaration)
+            processRouteClass(classDeclaration)
         }
 
-        if (routerMap.isNotEmpty()) {
-            generateRouterRegistry(targetPackage)
-        } else {
-            logger.info("RouterProcessor: routerMap 为空，不生成 RouterRegistry。")
+        if (routeMap.isNotEmpty()) {
+            generateRouterRegistry(moduleName)
         }
 
         return emptyList()
     }
 
-    private fun processRouterClass(classDeclaration: KSClassDeclaration) {
-        val routerAnnotation = classDeclaration.annotations
-            .find {
-                it.annotationType.resolve()?.declaration?.qualifiedName?.asString() == Router::class.qualifiedName
-            } ?: run {
-            logger.error("RouterProcessor: 未找到 ${Router::class.qualifiedName} 注解在类 ${classDeclaration.qualifiedName?.asString()}", classDeclaration)
+    private fun processRouteClass(classDeclaration: KSClassDeclaration) {
+        var className = classDeclaration.qualifiedName?.asString() ?: run {
+            logger.error("Class has no qualified name: ${classDeclaration.simpleName.asString()}")
             return
         }
 
-        val path = routerAnnotation.arguments
-            .firstOrNull { it.name?.asString() == "path" }
+        // 修复点：移除 Kotlin 类后缀
+        if (className.endsWith("Kt")) {
+            className = className.removeSuffix("Kt")
+        }
+
+        val routeAnnotation = classDeclaration.annotations.firstOrNull {
+            it.annotationType.resolve()?.declaration?.qualifiedName?.asString() == ROUTE_ANNOTATION_NAME
+        } ?: run {
+            logger.error("@Route annotation not found on class: $className")
+            return
+        }
+
+        val path = routeAnnotation.arguments.firstOrNull { it.name?.asString() == "path" }
             ?.value as? String ?: run {
-            logger.error("RouterProcessor: 未找到 'path' 参数在注解 ${Router::class.qualifiedName} 中，类 ${classDeclaration.qualifiedName?.asString()}", classDeclaration)
+            logger.error("Missing 'path' argument in @Route annotation for class: $className")
             return
         }
 
-        val qualifiedName = classDeclaration.qualifiedName?.asString() ?: run {
-            logger.error("RouterProcessor: 无法获取类 ${classDeclaration.simpleName.asString()} 的完整限定名", classDeclaration)
+        if (routeMap.containsKey(path)) {
+            logger.error("Duplicate route path: '$path' already mapped to ${routeMap[path]}")
             return
         }
 
-        if (routerMap.containsKey(path)) {
-            val existing = routerMap[path]
-            logger.error("RouterProcessor: 路由路径 '$path' 已存在: $existing (新: $qualifiedName)", classDeclaration)
-        } else {
-            routerMap[path] = qualifiedName
-            logger.info("RouterProcessor: 添加路由: '$path' -> '$qualifiedName'")
-        }
+        routeMap[path] = className
+        logger.info("Mapped route: '$path' -> $className")
     }
 
-    private fun generateRouterRegistry(targetPackage: String) {
+    private fun generateRouterRegistry(moduleName: String) {
         try {
-            val finalPackage = targetPackage // 确保这里使用传入的 targetPackage
+            val packageName = options["ROUTER_PACKAGE"] ?: "com.example.router.generated"
+            logger.info("Generating RouterRegistry in package: $packageName")
 
-            logger.info("RouterProcessor: 正在生成路由注册表到包: $finalPackage")
+            // 修复点：使用正确的 AppRouter 类型
+            val appRouterType = ClassName("com.example.router", "AppRouter")
 
-            val fileSpec = FileSpec.builder(finalPackage, "RouterRegistry")
-                .addFileComment("AUTO-GENERATED FILE. DO NOT EDIT MANUALLY!\n")
+            val fileSpec = FileSpec.builder(packageName, "${moduleName}RouteRegistry")
+                .addFileComment("Auto-generated router registry for $moduleName module. Do not edit!")
                 .addType(
-                    TypeSpec.objectBuilder("RouterRegistry")
-                        .addProperty(
-                            PropertySpec.builder(
-                                "pathMap",
-                                Map::class.asClassName().parameterizedBy(
-                                    String::class.asClassName(),
-                                    String::class.asClassName()
-                                )
-                            )
-                                .initializer(buildMapInitializer())
-                                .addModifiers(KModifier.PRIVATE)
-                                .build()
-                        )
+                    TypeSpec.objectBuilder("${moduleName}RouteRegistry")
                         .addFunction(
-                            FunSpec.builder("getDestination")
-                                .addParameter("path", String::class)
-                                .returns(Class::class.asClassName().parameterizedBy(STAR))
-                                .addCode(
-                                    """
-                                    |return pathMap[path]?.let { className ->
-                                    |    try {
-                                    |        Class.forName(className)
-                                    |    } catch (e: ClassNotFoundException) {
-                                    |        throw IllegalStateException("路由目标类未找到: "+className + ":"+ e)
-                                    |    }
-                                    |}
-                                    |""".trimMargin()
-                                )
+                            FunSpec.builder("registerRoutes")
+                                .addParameter("router", appRouterType)
+                                .addCode(buildRegistrationCode())
                                 .build()
                         )
                         .build()
                 )
                 .build()
 
-            fileSpec.writeTo(
-                codeGenerator,
-                Dependencies(aggregating = false),
-            )
-
-            logger.info("RouterProcessor: 路由注册表生成成功")
+            fileSpec.writeTo(codeGenerator, Dependencies(aggregating = true))
+            logger.info("Route registry generated for $moduleName module")
         } catch (e: Exception) {
-            logger.error("RouterProcessor: 生成路由注册表失败: ${e.message}") // 打印完整异常
+            logger.exception(e)
         }
     }
 
-    private fun buildMapInitializer(): CodeBlock {
-        if (routerMap.isEmpty()) {
-            return CodeBlock.of("emptyMap<String, String>()")
-        }
-
+    private fun buildRegistrationCode(): CodeBlock {
         return CodeBlock.builder().apply {
-            add("mapOf(\n")
-            routerMap.forEach { (path, className) ->
-                add("    \"$path\" to \"$className\",\n") // 增加缩进，更美观
+            add("router.apply {\n")
+            routeMap.forEach { (path, className) ->
+                add("""registerRoute("$path", "$className")\n""")
             }
-            add(")")
+            add("}")
         }.build()
     }
 }

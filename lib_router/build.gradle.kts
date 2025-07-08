@@ -37,7 +37,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":lib_router_annotations"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

@@ -38,10 +38,6 @@ class GStyler(
         drawable.applyAttributes(context, attrs)
     }
 
-    // --- Public Setters for Dynamic Updates ---
-    // 以下方法是 `GStyler` 暴露给外部的公共接口，允许在运行时动态修改 `BaseDrawable` 的样式属性。
-    // 这些方法实际上是 `BaseDrawable` 对应方法的代理。
-
     /**
      * 动态设置背景 Drawable。
      *
@@ -135,7 +131,7 @@ class GStyler(
      * @param bottomRight 右下角圆角半径。
      * @param bottomLeft 左下角圆角半径。
      */
-    fun setCornerRadii(topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float) {
-        this.drawable.setCornerRadii(topLeft, topRight, bottomRight, bottomLeft)
+    fun setCornerRadius(topLeft: Float, topRight: Float, bottomRight: Float, bottomLeft: Float) {
+        this.drawable.setCornerRadius(topLeft, topRight, bottomRight, bottomLeft)
     }
 }
