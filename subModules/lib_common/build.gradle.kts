@@ -47,19 +47,21 @@ dependencies {
     api(libs.androidx.recyclerview)
     api(libs.androidx.material)
     api(libs.androidx.viewbinding)
-    api(libs.immersionbar)
+    //折叠工具类
+    api(libs.androidx.coordinatorlayout)
 
     // Navigation 组件
     api(libs.androidx.navigation.fragment.ktx)
     api(libs.androidx.navigation.ui.ktx)
 
 
+    api(libs.immersionbar)
     // 第三方库
     api(libs.mmkv)
 
     //滚动选择框
-    api(libs.androidx.wheel.picker.common)
-    api(libs.androidx.wheel.picker.color)
+    api(libs.com.github.wheel.picker.common)
+    api(libs.com.github.wheel.picker.color)
 
     //导航栏
     api(libs.com.github.magicIndicator)
