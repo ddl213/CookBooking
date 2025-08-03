@@ -1,4 +1,4 @@
-package com.example.common.base
+package com.example.common.base.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -14,78 +14,47 @@ import com.example.common.listener.OnItemDoubleClickListener
 import com.example.common.listener.OnItemLongClickListener
 import com.example.common.listener.OnItemScaleListener
 
-abstract class BaseAdapter<T, VB : ViewBinding>(
-    viewBindingClass: Class<VB>,
-    list: MutableList<T>? = null
-) : RecyclerView.Adapter<BaseViewHolder<VB>>(),
-    BaseListenerImp {
+abstract class BaseAdapter<T> : RecyclerView.Adapter<BaseViewHolder<ViewBinding>>(), BaseListenerImp {
 
-    private var list: MutableList<T> = list ?: mutableListOf()
+    // Adapter的数据源列表
+    protected var list: MutableList<T> = mutableListOf()
 
-    //item的点击事件
-    private var mOnItemClickListener: OnItemClickListener? = null
-    private var mOnItemScaleListener: OnItemScaleListener? = null
-    private var mOnItemLongClickListener: OnItemLongClickListener? = null
-    private var mOnItemDoubleClickListener: OnItemDoubleClickListener? = null
-    private var mOnItemChildClickListener: OnItemChildClickListener? = null
+    // item的点击事件
+    protected var mOnItemClickListener: OnItemClickListener? = null
+    protected var mOnItemScaleListener: OnItemScaleListener? = null
+    protected var mOnItemLongClickListener: OnItemLongClickListener? = null
+    protected var mOnItemDoubleClickListener: OnItemDoubleClickListener? = null
+    protected var mOnItemChildClickListener: OnItemChildClickListener? = null
 
-    private val inflateMethod = viewBindingClass.getInflateMethod()
-    private var initViewHolder: ((BaseViewHolder<VB>) -> Unit)? = null
 
-    @Suppress("UNCHECKED_CAST")
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<VB> {
-        val holder = BaseViewHolder(
-            inflateMethod.invoke(
-                null,
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            ) as VB,
-            initViewHolder
-        )
+    // 设置ViewHolder初始化的回调
+    protected var initViewHolder: ((BaseViewHolder<ViewBinding>) -> Unit)? = null
 
-        bindViewClickListener(holder)
-        return holder
-    }
-
-    override fun onBindViewHolder(holder: BaseViewHolder<VB>, position: Int) {
-        setData(holder, position, list[position])
+    fun initViewHolder(block: (BaseViewHolder<ViewBinding>) -> Unit) {
+        initViewHolder = block
     }
 
     override fun getItemCount(): Int = list.size
 
-    abstract fun setData(holder: BaseViewHolder<VB>, position: Int, item: T?)
-
-    private fun <VB : ViewBinding> Class<VB>.getInflateMethod() =
-        getMethod("inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.java)
-
-    fun initViewHolder(block: (BaseViewHolder<VB>) -> Unit) {
-        initViewHolder = block
-    }
-
-    //绑定控件点击事件
-    private fun bindViewClickListener(holder: BaseViewHolder<VB>) {
-        //item点击事件
+    // 绑定控件点击事件
+    protected fun bindViewClickListener(holder: BaseViewHolder<ViewBinding>) {
+        // item点击事件
         mOnItemClickListener?.let {
             holder.itemView.setOnClickListener { v ->
                 val position = holder.absoluteAdapterPosition
                 if (position == RecyclerView.NO_POSITION) return@setOnClickListener
-
                 setOnItemClick(v, position)
             }
         }
-
-        //item的长按事件
+        // item的长按事件
         mOnItemLongClickListener?.let {
             holder.itemView.setOnLongClickListener { v ->
                 val position = holder.absoluteAdapterPosition
                 if (position == RecyclerView.NO_POSITION) return@setOnLongClickListener false
-
                 setOnItemLongClick(v, position)
             }
         }
-
-        //item子控件的点击事件
+        // item子控件的点击事件
         mOnItemChildClickListener?.let {
             for (id in getChildClickViewIds()) {
                 holder.itemView.findViewById<View>(id)?.let {
@@ -95,15 +64,14 @@ abstract class BaseAdapter<T, VB : ViewBinding>(
                     it.setOnClickListener { v ->
                         val position = holder.absoluteAdapterPosition
                         if (position == RecyclerView.NO_POSITION) return@setOnClickListener
-
-                        setOnItemLongClick(v, position)
+                        setOnItemChildClick(v, position)
                     }
                 }
             }
         }
     }
 
-    //调用itemView点击事件
+    // 调用itemView点击事件
     private fun setOnItemClick(v: View, position: Int) {
         mOnItemClickListener?.onItemClick(this, v, position)
     }
@@ -124,7 +92,7 @@ abstract class BaseAdapter<T, VB : ViewBinding>(
         mOnItemChildClickListener?.onItemChildClick(this, v, position)
     }
 
-    //外界设置点击监听事件
+    // 外界设置点击监听事件
     override fun setOnItemClickListener(listener: OnItemClickListener) {
         mOnItemClickListener = listener
     }
@@ -141,33 +109,28 @@ abstract class BaseAdapter<T, VB : ViewBinding>(
         mOnItemDoubleClickListener = listener
     }
 
-    //获取监听器
     override fun setOnItemChildClickListener(listener: OnItemChildClickListener) {
         mOnItemChildClickListener = listener
     }
 
-    private fun getOnItemClick(): OnItemClickListener? {
+    // 获取监听器
+    protected fun getOnItemClick(): OnItemClickListener? {
         return mOnItemClickListener
     }
-
-    private fun getOnItemLongClick(): OnItemLongClickListener? {
+    protected fun getOnItemLongClick(): OnItemLongClickListener? {
         return mOnItemLongClickListener
     }
-
-    private fun getOnItemScale(): OnItemScaleListener? {
+    protected fun getOnItemScale(): OnItemScaleListener? {
         return mOnItemScaleListener
     }
-
-    private fun getOnItemDoubleClick(): OnItemDoubleClickListener? {
+    protected fun getOnItemDoubleClick(): OnItemDoubleClickListener? {
         return mOnItemDoubleClickListener
     }
-
-    private fun getOnItemChildClick(): OnItemChildClickListener? {
+    protected fun getOnItemChildClick(): OnItemChildClickListener? {
         return mOnItemChildClickListener
     }
 
-
-    //需要点击事件的View
+    // 需要点击事件的View
     private val childClickViewIds = LinkedHashSet<Int>()
 
     private fun getChildClickViewIds(): LinkedHashSet<Int> {
@@ -178,9 +141,9 @@ abstract class BaseAdapter<T, VB : ViewBinding>(
         childClickViewIds.addAll(ids.toList())
     }
 
-    //设置adapter数据源
+    // 设置adapter数据源
     @SuppressLint("NotifyDataSetChanged")
-    fun setNewInstance(list: MutableList<T>?) {
+    open fun setNewInstance(list: MutableList<T>?) {
         if (list === this.list) {
             return
         }
@@ -188,7 +151,7 @@ abstract class BaseAdapter<T, VB : ViewBinding>(
         notifyDataSetChanged()
     }
 
-    fun setList(list: List<T>) {
+    open fun submits(list: List<T>) {
         if (list !== this.list) {
             this.list.clear()
             if (list.isNotEmpty()) {
@@ -216,27 +179,14 @@ abstract class BaseAdapter<T, VB : ViewBinding>(
     fun clear() {
         list.clear()
     }
-
 }
 
 class BaseViewHolder<VB : ViewBinding>(
     val binding: VB,
     init: ((BaseViewHolder<VB>) -> Unit)? = null
 ) : RecyclerView.ViewHolder(binding.root) {
-
     init {
         init?.invoke(this)
     }
 }
 
-inline fun <T, reified VB : ViewBinding> adapterOf(
-    clazz: Class<VB> = VB::class.java,
-    list: MutableList<T>? = null,
-    crossinline setData: BaseAdapter<T, VB>.(holder: BaseViewHolder<VB>, position: Int, item: T?) -> Unit,
-): BaseAdapter<T, VB> =
-
-    object : BaseAdapter<T, VB>(clazz, list ?: mutableListOf<T>()) {
-        override fun setData(holder: BaseViewHolder<VB>, position: Int, item: T?) {
-            setData(this, holder, position, item)
-        }
-    }

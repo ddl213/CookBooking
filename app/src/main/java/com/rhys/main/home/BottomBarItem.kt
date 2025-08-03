@@ -1,10 +1,10 @@
-package com.example.common.view
+package com.rhys.main.home
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import com.example.common.databinding.CommonLayoutNavigationBarItemBinding
+import com.rhys.main.databinding.LayoutBottomBarItemBinding
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView
 
 /**
@@ -13,7 +13,7 @@ import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTit
  * @CreateDate: 2024/5/23 11:52
  * @Version: 1.0
  */
-class NavigationBarItem @JvmOverloads constructor(
+class BottomBarItem @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
     def: Int = 0,
@@ -21,7 +21,7 @@ class NavigationBarItem @JvmOverloads constructor(
     private val resId: Int = -1
 ) : FrameLayout(context, attributeSet, def), IPagerTitleView {
     private val mBinding =
-        CommonLayoutNavigationBarItemBinding.inflate(LayoutInflater.from(context), this, true)
+        LayoutBottomBarItemBinding.inflate(LayoutInflater.from(context), this, true)
 
 
     init {

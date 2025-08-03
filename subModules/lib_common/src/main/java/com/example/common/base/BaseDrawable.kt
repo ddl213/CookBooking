@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import androidx.annotation.ColorInt
 import com.example.common.R
+import com.example.common.utils.LogUtils
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
@@ -176,6 +177,8 @@ class BaseDrawable : Drawable() {
                 cornerRadius
             )
 
+            LogUtils.d("cornerRadii: $cornerRadii")
+
             cornerRadii = when {
                 topLeftRadius != 0f || topRightRadius != 0f ||
                         bottomRightRadius != 0f || bottomLeftRadius != 0f -> {
@@ -200,6 +203,95 @@ class BaseDrawable : Drawable() {
     override fun draw(canvas: Canvas) {
         rectF.set(bounds)
 
+        // 1. 绘制背景（考虑圆角）
+        drawBackground(canvas)
+
+        // 2. 绘制边框（考虑圆角）
+        drawBorder(canvas)
+
+//        // 1. 自定义渐变背景（最高优先级）
+//        val hasCustomGradient = backgroundStartColor != Color.TRANSPARENT ||
+//                backgroundCenterColor != Color.TRANSPARENT ||
+//                backgroundEndColor != Color.TRANSPARENT
+//
+//        // 2. 纯色背景（次优先级）
+//        val hasSolidBackground = backgroundColor != Color.TRANSPARENT
+//
+//        // 3. 系统背景Drawable（最低优先级）
+//        val hasSystemDrawable = systemBackground != null
+//
+//        when {
+//            hasCustomGradient || hasSolidBackground -> {
+//                // 绘制自定义背景（渐变或纯色）
+//                val bgColors = if (hasCustomGradient) {
+//                    if (backgroundCenterColor != Color.TRANSPARENT) {
+//                        intArrayOf(backgroundStartColor, backgroundCenterColor, backgroundEndColor)
+//                    } else {
+//                        intArrayOf(backgroundStartColor, backgroundEndColor)
+//                    }
+//                } else {
+//                    intArrayOf(backgroundColor, backgroundColor)
+//                }
+//
+//                paint.shader = createLinearGradient(bgColors, backgroundGradientAngle, rectF)
+//
+//                if (cornerRadii != null) {
+//                    path.reset()
+//                    path.addRoundRect(rectF, cornerRadii!!, Path.Direction.CW)
+//                    canvas.drawPath(path, paint)
+//                } else {
+//                    canvas.drawRect(rectF, paint)
+//                }
+//            }
+//            hasSystemDrawable -> {
+//                // 绘制系统背景Drawable
+//                systemBackground!!.bounds = bounds
+//                systemBackground!!.draw(canvas)
+//            }
+//            else -> {
+//                // 默认透明背景
+//            }
+//        }
+//
+//        // --- 绘制边框 (纯色或渐变) ---
+//        if (borderWidth > 0) {
+//            borderPaint.strokeWidth = borderWidth
+//
+//            val borderColors = if(borderStartColor != Color.TRANSPARENT ||
+//                borderCenterColor != Color.TRANSPARENT ||
+//                borderEndColor != Color.TRANSPARENT) {
+//                if (borderCenterColor != Color.TRANSPARENT) {
+//                    intArrayOf(borderStartColor, borderCenterColor, borderEndColor)
+//                } else {
+//                    intArrayOf(borderStartColor, borderEndColor)
+//                }
+//            } else {
+//                intArrayOf(borderColor, borderColor)
+//            }
+//
+//            borderPaint.shader = createLinearGradient(borderColors, borderGradientAngle, rectF)
+//
+//            borderRectF.set(rectF)
+//            val halfBorder = borderWidth / 2f
+//            borderRectF.inset(halfBorder, halfBorder)
+//
+//            if (cornerRadii != null) {
+//                val borderCornerRadii = FloatArray(8) { i ->
+//                    0f.coerceAtLeast(cornerRadii!![i] - halfBorder)
+//                }
+//                path.reset()
+//                path.addRoundRect(borderRectF, borderCornerRadii, Path.Direction.CW)
+//                canvas.drawPath(path, borderPaint)
+//
+//                LogUtils.d("borderCornerRadii: $borderCornerRadii :: $cornerRadii")
+//            } else {
+//                canvas.drawRect(borderRectF, borderPaint)
+//            }
+//        }
+    }
+
+
+    private fun drawBackground(canvas: Canvas) {
         // 1. 自定义渐变背景（最高优先级）
         val hasCustomGradient = backgroundStartColor != Color.TRANSPARENT ||
                 backgroundCenterColor != Color.TRANSPARENT ||
@@ -211,73 +303,86 @@ class BaseDrawable : Drawable() {
         // 3. 系统背景Drawable（最低优先级）
         val hasSystemDrawable = systemBackground != null
 
-        when {
-            hasCustomGradient || hasSolidBackground -> {
-                // 绘制自定义背景（渐变或纯色）
-                val bgColors = if (hasCustomGradient) {
-                    if (backgroundCenterColor != Color.TRANSPARENT) {
-                        intArrayOf(backgroundStartColor, backgroundCenterColor, backgroundEndColor)
+        // 创建背景绘制闭包
+        val drawBackground: (Canvas) -> Unit = { c ->
+            when {
+                hasCustomGradient || hasSolidBackground -> {
+                    val bgColors = if (hasCustomGradient) {
+                        if (backgroundCenterColor != Color.TRANSPARENT) {
+                            intArrayOf(backgroundStartColor, backgroundCenterColor, backgroundEndColor)
+                        } else {
+                            intArrayOf(backgroundStartColor, backgroundEndColor)
+                        }
                     } else {
-                        intArrayOf(backgroundStartColor, backgroundEndColor)
+                        intArrayOf(backgroundColor, backgroundColor)
                     }
-                } else {
-                    intArrayOf(backgroundColor, backgroundColor)
-                }
 
-                paint.shader = createLinearGradient(bgColors, backgroundGradientAngle, rectF)
-
-                if (cornerRadii != null) {
-                    path.reset()
-                    path.addRoundRect(rectF, cornerRadii!!, Path.Direction.CW)
-                    canvas.drawPath(path, paint)
-                } else {
-                    canvas.drawRect(rectF, paint)
+                    paint.shader = createLinearGradient(bgColors, backgroundGradientAngle, rectF)
+                    c.drawRect(rectF, paint)
                 }
-            }
-            hasSystemDrawable -> {
-                // 绘制系统背景Drawable
-                systemBackground!!.bounds = bounds
-                systemBackground!!.draw(canvas)
-            }
-            else -> {
-                // 默认透明背景
+                hasSystemDrawable -> {
+                    systemBackground!!.bounds = bounds
+                    systemBackground!!.draw(c)
+                }
+                else -> {
+                    // 默认透明背景
+                }
             }
         }
 
-        // --- 绘制边框 (纯色或渐变) ---
-        if (borderWidth > 0) {
-            borderPaint.strokeWidth = borderWidth
-
-            val borderColors = if(borderStartColor != Color.TRANSPARENT ||
-                borderCenterColor != Color.TRANSPARENT ||
-                borderEndColor != Color.TRANSPARENT) {
-                if (borderCenterColor != Color.TRANSPARENT) {
-                    intArrayOf(borderStartColor, borderCenterColor, borderEndColor)
-                } else {
-                    intArrayOf(borderStartColor, borderEndColor)
-                }
-            } else {
-                intArrayOf(borderColor, borderColor)
-            }
-
-            borderPaint.shader = createLinearGradient(borderColors, borderGradientAngle, rectF)
-
-            borderRectF.set(rectF)
-            val halfBorder = borderWidth / 2f
-            borderRectF.inset(halfBorder, halfBorder)
-
-            if (cornerRadii != null) {
-                val borderCornerRadii = FloatArray(8) { i ->
-                    0f.coerceAtLeast(cornerRadii!![i] - halfBorder)
-                }
-                path.reset()
-                path.addRoundRect(borderRectF, borderCornerRadii, Path.Direction.CW)
-                canvas.drawPath(path, borderPaint)
-            } else {
-                canvas.drawRect(borderRectF, borderPaint)
-            }
+        // 应用圆角或直接绘制
+        if (cornerRadii != null) {
+            path.reset()
+            path.addRoundRect(rectF, cornerRadii!!, Path.Direction.CW)
+            canvas.save()
+            // 确保所有背景类型（包括系统背景）都应用相同的圆角效果
+            //强制所有背景内容（包括系统背景）都在圆角区域内绘制
+            canvas.clipPath(path)
+            drawBackground(canvas)
+            // 如果有圆角，恢复画布
+            canvas.restore()
+        } else {
+            drawBackground(canvas)
         }
     }
+
+    private fun drawBorder(canvas: Canvas) {
+        if (borderWidth <= 0) return
+
+        borderPaint.strokeWidth = borderWidth
+
+        val borderColors = if (borderStartColor != Color.TRANSPARENT ||
+            borderCenterColor != Color.TRANSPARENT ||
+            borderEndColor != Color.TRANSPARENT
+        ) {
+            if (borderCenterColor != Color.TRANSPARENT) {
+                intArrayOf(borderStartColor, borderCenterColor, borderEndColor)
+            } else {
+                intArrayOf(borderStartColor, borderEndColor)
+            }
+        } else {
+            intArrayOf(borderColor, borderColor)
+        }
+
+        borderPaint.shader = createLinearGradient(borderColors, borderGradientAngle, rectF)
+
+        borderRectF.set(rectF)
+        val halfBorder = borderWidth / 2f
+        borderRectF.inset(halfBorder, halfBorder)
+
+        if (cornerRadii != null) {
+            val borderCornerRadii = FloatArray(8) { i ->
+                0f.coerceAtLeast(cornerRadii!![i] - halfBorder)
+            }
+            path.reset()
+            path.addRoundRect(borderRectF, borderCornerRadii, Path.Direction.CW)
+            canvas.drawPath(path, borderPaint)
+        } else {
+            canvas.drawRect(borderRectF, borderPaint)
+        }
+    }
+
+
 
     private fun createLinearGradient(@ColorInt colors: IntArray, angle: Float, bounds: RectF): LinearGradient {
         val radians = Math.toRadians(angle.toDouble()).toFloat()

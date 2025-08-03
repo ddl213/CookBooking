@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/subModules/lib_cookbook" />
             <option value="$PROJECT_DIR$/subModules/lib_index" />
             <option value="$PROJECT_DIR$/subModules/lib_mine" />
+            <option value="$PROJECT_DIR$/subModules/lib_network" />
             <option value="$PROJECT_DIR$/subModules/lib_order" />
             <option value="$PROJECT_DIR$/subModules/lib_route_annotation" />
             <option value="$PROJECT_DIR$/subModules/lib_route_api" />

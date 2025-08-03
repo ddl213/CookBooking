@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="textTitle">#0F141A</color>
+    <color name="textNormal">#5C738C</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
@@ -12,5 +13,6 @@
     <color name="color_f0f0f0">#F0F0F0</color>
     <color name="color_0f0f0f">#0F0F0F</color>
     <color name="color_e8edf2">#E8EDF2</color>
+    <color name="color_0a80ed">#0A80ED</color>
 
 </resources>

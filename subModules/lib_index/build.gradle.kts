@@ -47,6 +47,8 @@ android {
 dependencies {
     //公共模块
     implementation(project(":lib_common"))
+    //网络模块
+    implementation(project(":lib_network"))
     //路由模块
     implementation(project(":lib_route_api"))
     implementation(project(":lib_route_annotation"))

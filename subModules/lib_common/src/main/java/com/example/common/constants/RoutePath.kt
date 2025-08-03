@@ -26,6 +26,7 @@ object RoutePath {
     const val PAGE_COOK_BOOK_DETAIL = "action://3003"
     //点单页
     const val PAGE_ORDER_INFO = "action://3004"
+    const val PAGE_INDEX_CHILD = "action://3005"
 
 
     /**

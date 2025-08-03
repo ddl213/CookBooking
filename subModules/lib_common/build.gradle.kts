@@ -35,7 +35,6 @@ android {
     buildFeatures {
         viewBinding = true
     }
-    resourcePrefix = "common_"
 }
 
 dependencies {
@@ -66,6 +65,8 @@ dependencies {
     //导航栏
     api(libs.com.github.magicIndicator)
 
+    //图片
+//    api(libs.com.github.glide)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

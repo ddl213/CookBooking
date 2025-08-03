@@ -59,7 +59,7 @@ abstract class BaseBindFragment<V : ViewBinding>(private val inflate: (LayoutInf
     /**
      * 初始化状态栏
      */
-    abstract fun initTitleBar() : TitleBar?
+    abstract fun initTitleBar() : View?
     open fun immersionBarDarkFont() : Boolean = true
 
     /**

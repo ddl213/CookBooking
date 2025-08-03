@@ -11,9 +11,9 @@ import com.example.common.constants.RoutePath.PAGE_INDEX
 import com.example.common.constants.RoutePath.PAGE_MINE
 import com.example.common.constants.RoutePath.PAGE_ORDER
 import com.example.common.ext.attach
+import com.example.common.ext.setNavigator
 import com.example.common.ext.visible
 import com.example.common.utils.LogUtils
-import com.example.common.view.NavigationBarItem
 import com.example.common.view.TitleBar
 import com.marky.route.annotation.Route
 import com.marky.route.api.NRoute
@@ -56,41 +56,22 @@ class HomeFragment : BaseBindFragment<FragmentHomeBinding>(FragmentHomeBinding::
     override fun initView(binding: FragmentHomeBinding) {
 
         LogUtils.d("HomeFragment 初始化成功")
-        binding!!.indicator.visible()
 
         binding.vp.isUserInputEnabled = false
         binding.vp.offscreenPageLimit = mTab.size
 
+        binding.indicator.setNavigator(requireContext(), mTab){tabInfo, p1 ->
+            BottomBarItem(
+                context = requireContext(),
+                title = tabInfo.name,
+                resId = mTabIcon[p1]
+            ).apply {
+                setOnClickListener {
+                    binding.vp.setCurrentItem(p1, false)
 
-        val navigator = CommonNavigator(requireContext()).apply {
-            adapter = object : CommonNavigatorAdapter() {
-                override fun getCount(): Int {
-                    return mTab.size
                 }
-
-                override fun getTitleView(p0: Context?, p1: Int): IPagerTitleView {
-                    val tabInfo = mTab[p1]
-                    return NavigationBarItem(
-                        context = requireContext(),
-                        title = tabInfo.name,
-                        resId = mTabIcon[p1]
-                    ).apply {
-                        setOnClickListener {
-                            binding!!.vp.setCurrentItem(p1, false)
-
-                        }
-                    }
-                }
-
-                override fun getIndicator(p0: Context?): IPagerIndicator? {
-                    return null
-                }
-
             }
         }
-
-        navigator.isAdjustMode = true
-        binding.indicator.navigator = navigator
         binding.vp.adapter = CommonFragmentAdapter(mTab, this)
         binding.vp.attach(binding.indicator)
     }

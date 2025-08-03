@@ -32,8 +32,10 @@ navigationUiKtx = "2.7.7"
 wheelPicker = "4.1.14"
 
 #导航栏
-
 magicIndicator = "1.7.0"
+
+#图片
+glide = "4.16.0"
 
 
 # Plugins
@@ -85,6 +87,9 @@ com-github-wheel-picker-color = { module = "com.github.gzu-liyujiang.AndroidPick
 
 #导航栏
 com-github-MagicIndicator = { module = "com.github.hackware1993:MagicIndicator", version.ref = "magicIndicator"}
+
+#图片
+com-github-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide"}
 
 # 测试相关
 junit = { module = "junit:junit", version.ref = "junit" }
