@@ -75,7 +75,7 @@ fun RecyclerView.grid(spanCount : Int = 2,orientation : Int = RecyclerView.VERTI
     layoutManager = GridLayoutManager(context, spanCount, orientation, reverse)
 }
 
-fun <T> RecyclerView.buildAdapter(list: MutableList<T>? = null, block: AdapterBuilder<T>.() -> BaseAdapter<T>): BaseAdapter<T> {
+fun <T> RecyclerView.buildAdapter(block: AdapterBuilder<T>.() -> BaseAdapter<T>): BaseAdapter<T> {
     val builder = AdapterBuilder<T>()
     val adapter = builder.block()
     this.adapter = adapter

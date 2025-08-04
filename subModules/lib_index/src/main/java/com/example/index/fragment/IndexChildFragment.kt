@@ -5,7 +5,9 @@ import com.example.common.base.BaseBindFragment
 import com.example.common.constants.RoutePath
 import com.example.common.ext.adapterOf
 import com.example.common.ext.buildAdapter
+import com.example.common.ext.liner
 import com.example.index.databinding.IndexFragmentIndexChildBinding
+import com.example.index.databinding.IndexLayoutIndexChildItem2Binding
 import com.example.index.databinding.IndexLayoutIndexChildItemBinding
 import com.example.network.bean.HomeFeedItem
 import com.example.network.bean.Recipe
@@ -159,6 +161,28 @@ class IndexChildFragment : BaseBindFragment<IndexFragmentIndexChildBinding>(Inde
                 tvComments.text = item.recipe.commentsCount.toString()
                 tvName.text = item.user.name
 //                ivPicture
+            }
+        }
+
+        val aaa = binding.rvIndex.liner().buildAdapter <HomeFeedItem>{
+            setLayout(0,IndexLayoutIndexChildItemBinding::class.java)
+            setLayout(1,IndexLayoutIndexChildItem2Binding::class.java)
+            setViewTypeDelegate { position, item ->
+                if (position % 2 == 0) {
+                    0
+                } else {
+                    1
+                }
+            }
+            bindMulti { holder, position, item ->
+                when(holder.itemViewType){
+                    0 ->withBinding<IndexLayoutIndexChildItemBinding>{ binding, item ->
+                        holder.binding
+                    }
+                    1 ->withBinding<IndexLayoutIndexChildItem2Binding>{binding, item ->
+
+                    }
+                }
             }
         }
 
