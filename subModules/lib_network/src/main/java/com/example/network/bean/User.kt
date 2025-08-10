@@ -1,4 +1,4 @@
-package com.android.network.bean
+package com.example.network.bean
 
 data class User(
     val id: String, // 用户的唯一ID

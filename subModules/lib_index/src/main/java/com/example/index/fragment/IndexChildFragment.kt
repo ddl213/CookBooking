@@ -5,9 +5,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.common.base.BaseBindFragment
 import com.android.common.ext.buildAdapter
 import com.android.common.utils.RvDecoration
-import com.android.network.bean.HomeFeedItem
-import com.android.network.bean.Recipe
-import com.android.network.bean.User
+import com.example.network.bean.HomeFeedItem
+import com.example.network.bean.Recipe
+import com.example.network.bean.User
 import com.campaign.common.constants.RoutePath.PAGE_INDEX_CHILD
 import com.android.common.ext.dp
 import com.campaign.common.ext.liner

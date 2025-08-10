@@ -1,4 +1,4 @@
-package com.android.network.bean
+package com.example.network.bean
 
 data class HomeFeedItem(
     val user : User,

@@ -17,6 +17,7 @@ class TitleBar @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private var mClickCallback: (() -> Unit)? = null
+    private var mRightClickCallback: (() -> Unit)? = null
     private val mBinding = CommonLayoutTitleBarBinding.inflate(LayoutInflater.from(context), this, true)
 
     init {
@@ -27,7 +28,8 @@ class TitleBar @JvmOverloads constructor(
             val textColor = typedArray.getColor(R.styleable.TitleBar_title_text_color, Color.parseColor("#0F141A"))
             val textSize = typedArray.getDimension(R.styleable.TitleBar_title_text_size, 18f)
 
-            val showRight = typedArray.hasValue(R.styleable.TitleBar_right_text)
+            val showRightSrc = typedArray.hasValue(R.styleable.TitleBar_right_src)
+            val showRightText = typedArray.hasValue(R.styleable.TitleBar_right_text)
 
             if (leftSrc != -1) {
                 ivLeft.setImageResource(leftSrc)
@@ -38,8 +40,14 @@ class TitleBar @JvmOverloads constructor(
                 tvTitle.setTextColor(textColor)
                 tvTitle.textSize = textSize
             }
-
-            if (showRight) {
+            if (showRightSrc){
+                ivRight.setImageResource(typedArray.getResourceId(R.styleable.TitleBar_right_src, -1))
+                ivRight.visibility = VISIBLE
+                ivRight.setOnClickListener {
+                    mRightClickCallback?.invoke()
+                }
+            }
+            else if (showRightText) {
                 tvRight.text = typedArray.getString(R.styleable.TitleBar_right_text)
                 tvRight.visibility = VISIBLE
                 tvRight.setTextColor(textColor)
@@ -70,8 +78,12 @@ class TitleBar @JvmOverloads constructor(
         mBinding.tvTitle.text = text
     }
 
-    fun setLeftClickListener(block: () -> Unit) {
+    fun setLeftClick(block: () -> Unit) {
         mClickCallback = block
+    }
+
+    fun setRightClick(block: () -> Unit) {
+        mRightClickCallback =  block
     }
 
 }

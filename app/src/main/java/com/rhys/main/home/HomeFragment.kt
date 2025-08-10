@@ -25,11 +25,11 @@ class HomeFragment : BaseBindFragment<FragmentHomeBinding>(FragmentHomeBinding::
      * 配置tab图标
      */
     private val mTabIcon = listOf(
-        R.drawable.selector_navigator_item_passenger_home,
-        R.drawable.selector_navigator_item_passenger_way,
-        R.drawable.selector_navigator_item_passenger_trip,
-        R.drawable.selector_navigator_item_passenger_mine,
-        R.drawable.selector_navigator_item_passenger_mine,
+        R.drawable.selector_navigator_item_home,
+        R.drawable.selector_navigator_item_recipes,
+        R.drawable.selector_navigator_item_chat,
+        R.drawable.selector_navigator_item_order,
+        R.drawable.selector_navigator_item_mine,
     )
 
     /**

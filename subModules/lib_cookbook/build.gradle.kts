@@ -50,6 +50,7 @@ dependencies {
     //路由模块
     implementation(project(":lib_route_api"))
     implementation(project(":lib_route_annotation"))
+    implementation(project(mapOf("path" to ":lib_network")))
     ksp(project(":lib_route_compiler"))
 
 

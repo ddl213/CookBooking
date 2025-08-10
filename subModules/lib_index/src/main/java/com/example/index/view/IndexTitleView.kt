@@ -1,42 +1,39 @@
-package com.rhys.main.home
+package com.example.index.view
 
 import android.content.Context
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import com.rhys.main.databinding.LayoutBottomBarItemBinding
+import com.android.common.ext.gone
+import com.android.common.ext.visible
+import com.example.index.databinding.IndexLayoutTitleViewBinding
 import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView
 
-/**
- * @Description: 首页底部bottombar item view
- * @Author: marky
- * @CreateDate: 2024/5/23 11:52
- * @Version: 1.0
- */
-class BottomBarItem @JvmOverloads constructor(
+class IndexTitleView@JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
     def: Int = 0,
-    title: String = "",
-    resId: Int = -1
+    title: String = ""
 ) : FrameLayout(context, attributeSet, def), IPagerTitleView {
     private val mBinding =
-        LayoutBottomBarItemBinding.inflate(LayoutInflater.from(context), this, true)
+        IndexLayoutTitleViewBinding.inflate(LayoutInflater.from(context), this, true)
 
 
     init {
-        mBinding.iv.setImageResource(resId)
-        mBinding.tv.text = title
+        mBinding.tvTitle.text = title
     }
 
     override fun onSelected(p0: Int, p1: Int) {
-        mBinding.iv.isSelected = true
-        mBinding.tv.isSelected = true
+        mBinding.tvTitle.isSelected = true
+        mBinding.tvTitle.typeface = Typeface.DEFAULT_BOLD
+        mBinding.vBottomLine.visible()
     }
 
     override fun onDeselected(p0: Int, p1: Int) {
-        mBinding.iv.isSelected = false
-        mBinding.tv.isSelected = false
+        mBinding.tvTitle.isSelected = false
+        mBinding.tvTitle.typeface = Typeface.DEFAULT
+        mBinding.vBottomLine.gone()
     }
 
     override fun onLeave(p0: Int, p1: Int, p2: Float, p3: Boolean) {
@@ -46,6 +43,4 @@ class BottomBarItem @JvmOverloads constructor(
     override fun onEnter(p0: Int, p1: Int, p2: Float, p3: Boolean) {
 
     }
-
-
 }

@@ -48,8 +48,13 @@
                     android:layout_marginHorizontal="16dp"
                     android:padding="16dp"
                     android:background="@color/color_e8edf2"
-                    app:radius="12dp"
-                    android:drawableStart="@drawable/index_img_search_gray" />
+                    android:gravity="center_vertical"
+                    android:drawableStart="@drawable/index_img_search_gray"
+                    android:drawablePadding="8dp"
+                    android:hint="搜索菜谱或好友"
+                    android:textColorHint="@color/color_999999"
+                    android:textSize="14sp"
+                    app:radius="12dp" />
             </LinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 

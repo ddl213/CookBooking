@@ -1,4 +1,4 @@
-package com.android.network.bean
+package com.example.network.bean
 
 data class Recipe(
     val id: String, // 菜谱的唯一ID

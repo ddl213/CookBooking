@@ -17,22 +17,24 @@ object RoutePath {
     const val PAGE_MINE = "action://2005"
 
     /**
-     * 首页-查看附近人的菜谱
+     * 首页子页面
      */
-    const val PAGE_NEAR_COOK_BOOK = "action://3001"
+    const val PAGE_INDEX_CHILD = "action://3001"
+
+    const val PAGE_NEAR_COOK_BOOK = "action://3002"
     //查看个人菜谱
-    const val PAGE_USER_COOK_BOOK = "action://3002"
+    const val PAGE_USER_COOK_BOOK = "action://3003"
     //查看菜谱详情
-    const val PAGE_COOK_BOOK_DETAIL = "action://3003"
+    const val PAGE_COOK_BOOK_DETAIL = "action://3004"
     //点单页
-    const val PAGE_ORDER_INFO = "action://3004"
-    const val PAGE_INDEX_CHILD = "action://3005"
+    const val PAGE_ORDER_INFO = "action://3005"
 
 
     /**
      * 添加菜单页
      */
-    const val PAGE_ADD_MENU = "action://4001"
+    const val PAGE_COOK_BOOK_CHILD = "action://4001"
+    const val PAGE_COOK_BOOK_ADD = "action://4002"
 
     /**
      * 聊天详情
