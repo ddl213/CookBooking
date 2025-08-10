@@ -52,9 +52,9 @@ android {
 }
 
 dependencies {
-    getRootDir().list()?.forEach {
+    rootDir.list()?.forEach {
         if ("subModules" == it) {
-            File(getRootDir(), it).list()?.forEach { child ->
+            File(rootDir, it).list()?.forEach { child ->
                 if (child.startsWith("lib_") && !child.contains("compiler")) {
                     println("subModules : ${child}")
                     implementation(project(path = ":$child"))

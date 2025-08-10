@@ -1,13 +1,13 @@
 package com.rhys.cookbook
 
-import com.example.common.base.BaseBindFragment
-import com.example.common.constants.RoutePath
-import com.example.common.utils.LogUtils
-import com.example.common.view.TitleBar
+import com.android.common.base.BaseBindFragment
+import com.android.common.utils.LogUtils
+import com.android.common.view.TitleBar
+import com.campaign.common.constants.RoutePath.PAGE_COOK_BOOK
 import com.marky.route.annotation.Route
 import com.rhys.cookbook.databinding.CookbookFragmentCookBookBinding
 
-@Route(RoutePath.PAGE_COOK_BOOK)
+@Route(PAGE_COOK_BOOK)
 class CookBookFragment : BaseBindFragment<CookbookFragmentCookBookBinding>(CookbookFragmentCookBookBinding::inflate) {
 
 

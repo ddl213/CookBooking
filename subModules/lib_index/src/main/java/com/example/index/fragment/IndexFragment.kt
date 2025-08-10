@@ -1,30 +1,40 @@
 package com.example.index.fragment
 
 import android.view.View
-import com.example.common.base.BaseBindFragment
-import com.example.common.base.CommonFragmentAdapter
-import com.example.common.bean.TabInfo
-import com.example.common.constants.RoutePath
-import com.example.common.constants.RoutePath.PAGE_INDEX_CHILD
-import com.example.common.ext.attach
-import com.example.common.ext.gone
-import com.example.common.ext.setNavigator
-import com.example.common.ext.visible
-import com.example.common.utils.LogUtils
+import androidx.viewpager2.widget.MarginPageTransformer
+import com.android.common.base.BaseBindFragment
+import com.android.common.base.CommonFragmentAdapter
+import com.android.common.bean.TabInfo
+import com.android.common.ext.attach
+import com.android.common.ext.gone
+import com.android.common.ext.setNavigator
+import com.android.common.ext.visible
+import com.android.common.utils.LogUtils
+import com.campaign.common.constants.RoutePath.PAGE_INDEX
+import com.campaign.common.constants.RoutePath.PAGE_INDEX_CHILD
+import com.campaign.common.ext.dp
 import com.example.index.bean.IndexTitleView
 import com.example.index.databinding.IndexFragmentIndexBinding
 import com.marky.route.annotation.Route
 import com.marky.route.api.NRoute
 import kotlin.math.abs
 
-@Route(RoutePath.PAGE_INDEX)
+@Route(PAGE_INDEX)
 class IndexFragment : BaseBindFragment<IndexFragmentIndexBinding>(IndexFragmentIndexBinding::inflate) {
     private val mTab by lazy {
         listOf(
-            TabInfo("推荐","tuijian",NRoute.getFragment(PAGE_INDEX_CHILD)!!),
-            TabInfo("好友","haoyou",NRoute.getFragment(PAGE_INDEX_CHILD)!!),
-            TabInfo("热门","hot",NRoute.getFragment(PAGE_INDEX_CHILD)!!),
-            TabInfo("最新","new",NRoute.getFragment(PAGE_INDEX_CHILD)!!)
+            TabInfo(
+                "推荐",
+                "tuijian",
+                NRoute.getFragment(PAGE_INDEX_CHILD)!!
+            ),
+            TabInfo(
+                "好友",
+                "haoyou",
+                NRoute.getFragment(PAGE_INDEX_CHILD)!!
+            ),
+            TabInfo("热门", "hot", NRoute.getFragment(PAGE_INDEX_CHILD)!!),
+            TabInfo("最新", "new", NRoute.getFragment(PAGE_INDEX_CHILD)!!)
         )
     }
 
@@ -45,13 +55,13 @@ class IndexFragment : BaseBindFragment<IndexFragmentIndexBinding>(IndexFragmentI
                 ).apply {
                     setOnClickListener {
                         binding.viewPager2.setCurrentItem(p1, false)
-                        LogUtils.d("点击了 $p1")
                     }
                 }
             }
 
             viewPager2.adapter = CommonFragmentAdapter(mTab,this@IndexFragment)
             viewPager2.attach(indicator)
+            viewPager2.setPageTransformer(MarginPageTransformer(8.dp().toInt()))
 
 
         }

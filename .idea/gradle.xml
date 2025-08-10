@@ -12,8 +12,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/subModules/lib_android_common" />
+            <option value="$PROJECT_DIR$/subModules/lib_campaign_common" />
             <option value="$PROJECT_DIR$/subModules/lib_chat" />
-            <option value="$PROJECT_DIR$/subModules/lib_common" />
             <option value="$PROJECT_DIR$/subModules/lib_cookbook" />
             <option value="$PROJECT_DIR$/subModules/lib_index" />
             <option value="$PROJECT_DIR$/subModules/lib_mine" />

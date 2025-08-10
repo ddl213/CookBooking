@@ -36,5 +36,5 @@ android {
 
 dependencies {
 
-    implementation(project(":lib_common"))
+    implementation(project(":lib_android_common"))
 }

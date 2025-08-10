@@ -1,13 +1,13 @@
 package com.rhys.mine
 
-import com.example.common.base.BaseBindFragment
-import com.example.common.constants.RoutePath
-import com.example.common.utils.LogUtils
-import com.example.common.view.TitleBar
+import com.android.common.base.BaseBindFragment
+import com.android.common.utils.LogUtils
+import com.android.common.view.TitleBar
+import com.campaign.common.constants.RoutePath.PAGE_MINE
 import com.marky.route.annotation.Route
 import com.rhys.mine.databinding.MineFragmentMineBinding
 
-@Route(RoutePath.PAGE_MINE)
+@Route(PAGE_MINE)
 class MineFragment : BaseBindFragment<MineFragmentMineBinding>(MineFragmentMineBinding::inflate) {
 
 

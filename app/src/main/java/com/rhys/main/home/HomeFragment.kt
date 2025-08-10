@@ -1,28 +1,22 @@
 package com.rhys.main.home
 
-import android.content.Context
-import com.example.common.base.BaseBindFragment
-import com.example.common.base.CommonFragmentAdapter
-import com.example.common.bean.TabInfo
-import com.example.common.constants.RoutePath.PAGE_CHAT
-import com.example.common.constants.RoutePath.PAGE_COOK_BOOK
-import com.example.common.constants.RoutePath.PAGE_HOME
-import com.example.common.constants.RoutePath.PAGE_INDEX
-import com.example.common.constants.RoutePath.PAGE_MINE
-import com.example.common.constants.RoutePath.PAGE_ORDER
-import com.example.common.ext.attach
-import com.example.common.ext.setNavigator
-import com.example.common.ext.visible
-import com.example.common.utils.LogUtils
-import com.example.common.view.TitleBar
+import com.android.common.base.BaseBindFragment
+import com.android.common.base.CommonFragmentAdapter
+import com.android.common.bean.TabInfo
+import com.android.common.ext.attach
+import com.android.common.ext.setNavigator
+import com.android.common.utils.LogUtils
+import com.android.common.view.TitleBar
+import com.campaign.common.constants.RoutePath.PAGE_CHAT
+import com.campaign.common.constants.RoutePath.PAGE_COOK_BOOK
+import com.campaign.common.constants.RoutePath.PAGE_HOME
+import com.campaign.common.constants.RoutePath.PAGE_INDEX
+import com.campaign.common.constants.RoutePath.PAGE_MINE
+import com.campaign.common.constants.RoutePath.PAGE_ORDER
 import com.marky.route.annotation.Route
 import com.marky.route.api.NRoute
 import com.rhys.main.R
 import com.rhys.main.databinding.FragmentHomeBinding
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.CommonNavigatorAdapter
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerIndicator
-import net.lucode.hackware.magicindicator.buildins.commonnavigator.abs.IPagerTitleView
 
 @Route(path = PAGE_HOME, startPage = true)
 class HomeFragment : BaseBindFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {

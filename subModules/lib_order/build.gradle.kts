@@ -26,11 +26,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         viewBinding = true
@@ -44,8 +44,10 @@ android {
 }
 
 dependencies {
-    //公共模块
-    implementation(project(":lib_common"))
+    //所有项目公共模块
+    implementation(project(":lib_android_common"))
+    //当前项目公共模块
+    implementation(project(":lib_campaign_common"))
     //路由模块
     implementation(project(":lib_route_api"))
     implementation(project(":lib_route_annotation"))

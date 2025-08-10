@@ -1,23 +1,26 @@
 package com.example.index.fragment
 
 import android.view.View
-import com.example.common.base.BaseBindFragment
-import com.example.common.constants.RoutePath
-import com.example.common.ext.adapterOf
-import com.example.common.ext.buildAdapter
-import com.example.common.ext.liner
+import androidx.recyclerview.widget.RecyclerView
+import com.android.common.base.BaseBindFragment
+import com.android.common.ext.buildAdapter
+import com.android.common.utils.RvDecoration
+import com.android.network.bean.HomeFeedItem
+import com.android.network.bean.Recipe
+import com.android.network.bean.User
+import com.campaign.common.constants.RoutePath.PAGE_INDEX_CHILD
+import com.campaign.common.ext.dp
+import com.campaign.common.ext.liner
+import com.campaign.common.ext.load
 import com.example.index.databinding.IndexFragmentIndexChildBinding
-import com.example.index.databinding.IndexLayoutIndexChildItem2Binding
-import com.example.index.databinding.IndexLayoutIndexChildItemBinding
-import com.example.network.bean.HomeFeedItem
-import com.example.network.bean.Recipe
-import com.example.network.bean.User
+import com.example.index.databinding.IndexLayoutIndexChildHorizontalItemBinding
+import com.example.index.databinding.IndexLayoutIndexChildVerticalItemBinding
 import com.marky.route.annotation.Route
 
-@Route(RoutePath.PAGE_INDEX_CHILD)
+@Route(PAGE_INDEX_CHILD)
 class IndexChildFragment : BaseBindFragment<IndexFragmentIndexChildBinding>(IndexFragmentIndexChildBinding::inflate) {
 
-    private val list = mutableListOf<HomeFeedItem>(
+    private val list = mutableListOf(
         HomeFeedItem(
             User(
                 "1",
@@ -153,41 +156,45 @@ class IndexChildFragment : BaseBindFragment<IndexFragmentIndexChildBinding>(Inde
     )
 
     override fun initView(binding: IndexFragmentIndexChildBinding) {
-        val adapter = adapterOf <HomeFeedItem, IndexLayoutIndexChildItemBinding>{ holder, position, item ->
-            holder.binding.apply {
-                tvTitle.text = item.recipe.name
-                tvDesc.text = item.recipe.desc
-                tvLikes.text = item.recipe.likes.toString()
-                tvComments.text = item.recipe.commentsCount.toString()
-                tvName.text = item.user.name
-//                ivPicture
-            }
-        }
 
-        val aaa = binding.rvIndex.liner().buildAdapter <HomeFeedItem>{
-            setLayout(0,IndexLayoutIndexChildItemBinding::class.java)
-            setLayout(1,IndexLayoutIndexChildItem2Binding::class.java)
-            setViewTypeDelegate { position, item ->
+        val adapter = binding.rvVertical.liner().buildAdapter <HomeFeedItem>{
+            setLayout(0,IndexLayoutIndexChildHorizontalItemBinding::class.java)
+            setLayout(1,IndexLayoutIndexChildVerticalItemBinding::class.java)
+            setViewTypeDelegate { position, _ ->
                 if (position % 2 == 0) {
                     0
                 } else {
                     1
                 }
             }
-            bindMulti { holder, position, item ->
+            bindMulti { holder, _, item ->
                 when(holder.itemViewType){
-                    0 ->withBinding<IndexLayoutIndexChildItemBinding>{ binding, item ->
-                        holder.binding
+                    0 ->{
+                        holder.withBinding<IndexLayoutIndexChildHorizontalItemBinding>{
+                            ivPicture.load(item.recipe.imageUrl)
+                        }
                     }
-                    1 ->withBinding<IndexLayoutIndexChildItem2Binding>{binding, item ->
-
+                    1 ->{
+                        holder.withBinding<IndexLayoutIndexChildVerticalItemBinding>{
+                            tvTitle.text = item.recipe.name
+                            tvDesc.text = item.recipe.desc
+                            tvLikes.text = item.recipe.likes.toString()
+                            tvComments.text = item.recipe.commentsCount.toString()
+                            tvName.text = item.user.name
+                        }
                     }
                 }
             }
         }
-
-        binding.rvIndex.adapter = adapter
-
+        binding.rvVertical.addItemDecoration(RvDecoration().setVertical(10.dp().toInt()))
+        binding.rvHorizontal.addItemDecoration(RvDecoration().setHorizontal(10.dp().toInt()).setTop(14.dp().toInt()))
+        binding.rvHorizontal.liner(RecyclerView.HORIZONTAL).buildAdapter<HomeFeedItem> {
+            setLayout(IndexLayoutIndexChildHorizontalItemBinding::class.java)
+            setList( list)
+            bind<IndexLayoutIndexChildHorizontalItemBinding>{ holder, _, item ->
+                holder.binding.ivPicture.load(item.recipe.imageUrl)
+            }
+        }
         adapter.setNewInstance(list)
     }
 

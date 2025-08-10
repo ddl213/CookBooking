@@ -45,8 +45,10 @@ android {
 }
 
 dependencies {
-    //公共模块
-    implementation(project(":lib_common"))
+    //所有项目公共模块
+    implementation(project(":lib_android_common"))
+    //当前项目公共模块
+    implementation(project(":lib_campaign_common"))
     //网络模块
     implementation(project(":lib_network"))
     //路由模块
