@@ -12,7 +12,7 @@ import com.android.common.ext.visible
 import com.android.common.utils.LogUtils
 import com.campaign.common.constants.RoutePath.PAGE_INDEX
 import com.campaign.common.constants.RoutePath.PAGE_INDEX_CHILD
-import com.campaign.common.ext.dp
+import com.android.common.ext.dp
 import com.example.index.bean.IndexTitleView
 import com.example.index.databinding.IndexFragmentIndexBinding
 import com.marky.route.annotation.Route

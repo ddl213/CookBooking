@@ -1,4 +1,4 @@
-package com.campaign.common.ext
+package com.android.common.ext
 
 import android.content.res.Resources
 import android.util.TypedValue

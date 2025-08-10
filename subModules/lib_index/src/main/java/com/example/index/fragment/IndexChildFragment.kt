@@ -9,7 +9,7 @@ import com.android.network.bean.HomeFeedItem
 import com.android.network.bean.Recipe
 import com.android.network.bean.User
 import com.campaign.common.constants.RoutePath.PAGE_INDEX_CHILD
-import com.campaign.common.ext.dp
+import com.android.common.ext.dp
 import com.campaign.common.ext.liner
 import com.campaign.common.ext.load
 import com.example.index.databinding.IndexFragmentIndexChildBinding

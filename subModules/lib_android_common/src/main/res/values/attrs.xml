@@ -36,4 +36,9 @@
         <attr name="right_text_size" format="float"/>
         <attr name="right_text_color" format="color"/>
     </declare-styleable>
+
+    <declare-styleable name="ExpandableFlowLayout">
+        <attr name="element_divider_horizontal" format="dimension"/>
+        <attr name="element_divider_vertical" format="dimension"/>
+    </declare-styleable>
 </resources>
